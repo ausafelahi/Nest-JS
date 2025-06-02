@@ -1,4 +1,91 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UsersService {}
+export class UsersService {
+  private users = [
+    {
+      id: 1,
+      name: 'Ethan Ramirez',
+      email: 'ethan.ramirez@example.com',
+      role: 'INTERN',
+    },
+    {
+      id: 2,
+      name: 'Maya Chen',
+      email: 'maya.chen@example.com',
+      role: 'ADMIN',
+    },
+    {
+      id: 3,
+      name: 'Julian Parker',
+      email: 'julian.parker@example.com',
+      role: 'INTERN',
+    },
+    {
+      id: 4,
+      name: 'Sofia Nguyen',
+      email: 'sofia.nguyen@example.com',
+      role: 'DEVELOPER',
+    },
+    {
+      id: 5,
+      name: 'Liam Patel',
+      email: 'liam.patel@example.com',
+      role: 'INTERN',
+    },
+  ];
+
+  findAll(role?: 'INTERN' | 'ADMIN' | 'DEVELOPER') {
+    if (role) {
+      return this.users.filter((user) => user.role === role);
+    }
+    return this.users;
+  }
+
+  findOne(id: number) {
+    const user = this.users.find((user) => user.id === id);
+
+    return user;
+  }
+
+  create(user: {
+    name: string;
+    email: string;
+    role: 'INTERN' | 'ADMIN' | 'DEVELOPER';
+  }) {
+    const usersByHighId = [...this.users].sort((a, b) => b.id - a.id);
+    const newUser = {
+      id: usersByHighId[0].id + 1,
+      ...user,
+    };
+    this.users.push(newUser);
+    return newUser;
+  }
+
+  update(
+    id: number,
+    updatedUser: {
+      name?: string;
+      email?: string;
+      role?: 'INTERN' | 'ADMIN' | 'DEVELOPER';
+    },
+  ) {
+    this.users = this.users.map((user) => {
+      if (user.id === id) {
+        return {
+          ...user,
+          ...updatedUser,
+        };
+      }
+      return user;
+    });
+
+    return this.findOne(id);
+  }
+
+  delete(id: number) {
+    const removeUser = this.findOne(id);
+    this.users = this.users.filter((user) => user.id !== id);
+    return removeUser;
+  }
+}
